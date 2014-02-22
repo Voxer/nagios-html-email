@@ -1,0 +1,64 @@
+<%
+// nagios base URI, ex http://nagios.example.com
+var baseuri = args[0];
+// colors to use for the email
+var colors = {
+	host: {
+		UP: '#88d066',
+		DOWN: '#f88888',
+	},
+	table: {
+		0: '#f4f4f4',
+		1: '#e7e7e7'
+	}
+};
+// keys to put in the table if they are present
+var keys = [
+	'NOTIFICATIONTYPE',
+	'HOSTALIAS',
+	'HOSTADDRESS',
+	'LONGDATETIME',
+	'HOSTSTATE'
+];
+-%>
+<!doctype html>
+<html>
+	<body>
+		<br />
+		<span style="background-color: <%= colors.host[nagios.HOSTSTATE] %>; padding: 1px 5px; border: 1px solid black;"><%= nagios.HOSTSTATE %></span> -
+		<strong><%= nagios.HOSTALIAS.split('.')[0] %></strong>
+		<br />
+		<br />
+<% if (nagios.NOTIFICATIONAUTHOR && nagios.NOTIFICATIONCOMMENT) { -%>
+		<strong>[<%= nagios.NOTIFICATIONTYPE === 'ACKNOWLEDGEMENT' ? 'acknowledgement' : 'comment' %>]
+		<%= nagios.NOTIFICATIONAUTHOR %>:</strong> <%= nagios.NOTIFICATIONCOMMENT %>
+		<br />
+		<br />
+<% } -%>
+		<table style="min-width: 500px;">
+<%
+			var i = 0;
+			keys.forEach(function(key) {
+				if (!nagios[key])
+					return;
+-%>
+			<tr style="background-color: <%= colors.table[i^=1] %>;">
+				<td><%= key.toLowerCase() %></td>
+				<td><%= nagios[key] %></td>
+			</tr>
+			<% }); -%>
+		</table>
+		<br />
+
+		<div style="font-size: 9pt; font-family: monospace;">
+<% if (baseuri) { -%>
+			<ul>
+				<li><a href="<%= baseuri %>"><%= baseuri %></li>
+				<li><a href="<%= baseuri %>/cgi-bin/extinfo.cgi?type=2&host=<%= encodeURIComponent(nagios.HOSTALIAS) %>&service=<%= encodeURIComponent(nagios.SERVICEDESC) %>">Alert Status Page</a> - all unhandled nagios alerts</li>
+			</ul>
+<% } -%>
+
+			<%= nagios.LONGDATETIME %>
+		</div>
+	</body>
+</html>
