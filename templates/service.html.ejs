@@ -1,0 +1,77 @@
+<%
+// nagios base URI, ex http://nagios.example.com
+var baseuri = args[0];
+// colors to use for the email
+var colors = {
+	service: {
+		OK: '#88d066',
+		WARNING: '#ffff00',
+		CRITICAL: '#f88888',
+		UNKNOWN: '#ffbb55'
+	},
+	table: {
+		0: '#f4f4f4',
+		1: '#e7e7e7'
+	}
+};
+// keys to put in the table if they are present
+var keys = [
+	'NOTIFICATIONTYPE',
+	'SERVICEDESC',
+	'HOSTALIAS',
+	'HOSTADDRESS',
+	'SERVICESTATE',
+	'SERVICEDURATION',
+	'SERVICEOUTPUT',
+	'LONGDATETIME'
+];
+-%>
+<!doctype html>
+<html>
+	<body>
+		<br />
+		<span style="background-color: <%= colors.service[nagios.SERVICESTATE] %>; padding: 1px 5px; border: 1px solid black;"><%= nagios.SERVICESTATE %></span> -
+		<strong><%= nagios.HOSTALIAS.split('.')[0] %> <%= nagios.SERVICEDESC %></strong>
+		<br />
+		<br />
+		<pre style="font-size: 9pt"><%= nagios.SERVICEOUTPUT %></pre>
+		<br />
+<% if (nagios.NOTIFICATIONAUTHOR && nagios.NOTIFICATIONCOMMENT) { -%>
+		<strong>[<%= nagios.NOTIFICATIONTYPE === 'ACKNOWLEDGEMENT' ? 'acknowledgement' : 'comment' %>]
+		<%= nagios.NOTIFICATIONAUTHOR %>:</strong> <%= nagios.NOTIFICATIONCOMMENT %>
+		<br />
+		<br />
+<% } else if (nagios._SERVICEALLEVIATE && nagios.SERVICESTATE !== 'OK') { -%>
+		<strong>the following steps may possibly alleviate the issue</strong>
+		<br />
+		<pre style="font-size: 9pt"><%= nagios._SERVICEALLEVIATE %></pre>
+		<br />
+<% } -%>
+		<table style="min-width: 500px;">
+<%
+			var i = 0;
+			keys.forEach(function(key) {
+				if (!nagios[key])
+					return;
+-%>
+			<tr style="background-color: <%= colors.table[i^=1] %>;">
+				<td><%= key.toLowerCase() %></td>
+				<td><%= nagios[key] %></td>
+			</tr>
+			<% }); -%>
+		</table>
+		<br />
+
+		<div style="font-size: 9pt; font-family: monospace;">
+<% if (baseuri) { -%>
+			<ul>
+				<li><a href="<%= baseuri %>"><%= baseuri %></li>
+				<li><a href="<%= baseuri %>/cgi-bin/extinfo.cgi?type=2&host=<%= encodeURIComponent(nagios.HOSTALIAS) %>&service=<%= encodeURIComponent(nagios.SERVICEDESC) %>">Alert Status Page</a> - all unhandled nagios alerts</li>
+				<li><a href="<%= baseuri %>/cgi-bin/cmd.cgi?cmd_typ=34&host=<%= encodeURIComponent(nagios.HOSTALIAS) %>&service=<%= encodeURIComponent(nagios.SERVICEDESC) %>">Acknowledge Alert</a> - acknowledge this service</li>
+			</ul>
+<% } -%>
+
+			<%= nagios.LONGDATETIME %>
+		</div>
+	</body>
+</html>
