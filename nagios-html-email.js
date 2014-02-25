@@ -141,7 +141,7 @@ var templ = '<html><body><pre><%= d %></pre></body></html>';
 data.d = JSON.stringify(data, null, 2);
 try {
   message = ejs.render(templ, data);
-} catch(e) {
+} catch (e) {
   message = util.format('error rendering default template!: %s', e.message);
   console.error(message);
 }
