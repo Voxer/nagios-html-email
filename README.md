@@ -104,7 +104,7 @@ At Voxer, we use the `_subject` attribute of services and not hosts.
 
 At Voxer, we use Chef to manage our Nagios instance, and as such, programatically
 generate Nagios services for each production service we have.  All of our production
-services are uniquely named like service1, service2, service3, etc. regardless of
+services are uniquely named like fooservice1, fooservice2, fooservice3, etc. regardless of
 the host that runs the service, so a separate Nagios service must be created for each
 production service.
 
@@ -113,7 +113,7 @@ running in production is set to warn us when it passes a certain threshold of RS
 and under typical circumstances we just get a core dump of the process, and restart it.
 
 After we have a couple core dumps, it becomes unecassary to waste time dumping core,
-so we just restarted the troubled programs before they become a issue.
+so we just restart the troubled programs before they become a issue.
 
 Since the "alleviation" steps are pretty much the same for each service, but we don't
 want this to happen automatically (imagine if every service restarted at the same time...
@@ -154,7 +154,7 @@ See [templates/](templates) to see the builtin templates.
 
 ### Rendering
 
-Templates are rendered using [ejs](https://github.com/visionmedia/ejs), and
+Templates are rendered using [EJS](https://github.com/visionmedia/ejs), and
 have these variables available for you to use.
 
 - `nagios`: this object contains all of the Nagios variables found as
