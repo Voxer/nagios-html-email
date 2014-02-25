@@ -1,6 +1,6 @@
 {
   "name": "nagios-html-email",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Generate HTML emails for Nagios service and host alerts",
   "author": "Dave Eddy <dave@daveeddy.com> (http://www.daveeddy.com)",
   "repository": "git://github.com/Voxer/nagios-html-email.git",
